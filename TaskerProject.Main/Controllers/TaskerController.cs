@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using TaskerProject.Data.Models;
 using TaskerProject.Business.Services.Interfaces;
+using Serilog;
 
 namespace TaskerProject.Main.Controllers
 {
@@ -23,20 +18,39 @@ namespace TaskerProject.Main.Controllers
 		[Route("getall")]
 		public IActionResult GetAllTasks()
 		{
-			var tasks = _taskerService.GetAllTasks();
-			return Ok(tasks);
+			try
+			{
+				var tasks = _taskerService.GetAllTasks();
+				return Ok(tasks);
+			}
+			catch (Exception ex)
+			{
+				// Log the exception
+				Log.Error(ex, "An error occurred while retrieving all tasks.");
+				return StatusCode(500, "An unexpected error occurred while retrieving all tasks.");
+			}
 		}
 
 		[HttpGet]
 		[Route("get/{id}")]
 		public IActionResult GetTasktById(int id)
 		{
-			var task = _taskerService.GetTasktById(id);
-			if (task == null)
+			try
 			{
-				return NotFound();
+				var task = _taskerService.GetTasktById(id);
+				if (task == null)
+				{
+					Log.Information("Couldn't find task with id:{@id}", id);
+					return NotFound();
+				}
+				return Ok(task);
 			}
-			return Ok(task);
+			catch (Exception ex)
+			{
+				// Log the exception or handle it appropriately
+				Log.Error(ex, "An error occurred while updating the task with ID {TaskId}", id);
+				return StatusCode(500, "An unexpected error occurred.");
+			}
 		}
 
 		[HttpPost]
@@ -45,13 +59,14 @@ namespace TaskerProject.Main.Controllers
 		{
 			try
 			{
-				//log info - Adding new task 
 				var addedTask = _taskerService.AddTask(task);
 				return CreatedAtAction(nameof(GetTasktById), new { id = addedTask.Id }, addedTask);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
-				//return error code
+				// Log the exception
+				Log.Error(ex, "An error occurred while adding a new task.");
+				return StatusCode(500, "An unexpected error occurred while adding a new task.");
 			}
 		}
 
@@ -59,20 +74,39 @@ namespace TaskerProject.Main.Controllers
 		[Route("update/{id}")]
 		public IActionResult UpdateTask(int id, [FromBody] Tasks task)
 		{
-			var updatedTask = _taskerService.UpdateTask(id, task);
-			if (updatedTask == null)
+			try
 			{
-				return NotFound();
+				var updatedTask = _taskerService.UpdateTask(id, task);
+				if (updatedTask == null)
+				{
+					Log.Information("Couldn't find and update task with id:{@id}", id);
+					return NotFound();
+				}
+				return Ok(updatedTask);
 			}
-			return Ok(updatedTask);
+			catch (Exception ex)
+			{
+				// Log the exception
+				Log.Error(ex, "An error occurred while updating the task with ID {TaskId}", id);
+				return StatusCode(500, "An unexpected error occurred while updating the task.");
+			}
 		}
 
 		[HttpDelete]
 		[Route("delete/{id}")]
 		public IActionResult DeleteTask(int id)
 		{
-			_taskerService.DeleteTask(id);
-			return NoContent();
+			try
+			{
+				_taskerService.DeleteTask(id);
+				return NoContent();
+			}
+			catch (Exception ex)
+			{
+				// Log the exception
+				Log.Error(ex, "An error occurred while deleting the task with ID {TaskId}", id);
+				return StatusCode(500, "An unexpected error occurred while deleting the task.");
+			}
 		}
 	}
 }

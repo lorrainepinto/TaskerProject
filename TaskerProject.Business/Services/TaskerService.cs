@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskerProject.Data.Models;
+﻿using TaskerProject.Data.Models;
 using TaskerProject.Business.Services.Interfaces;
 using TaskerProject.Data.Gateways.Interfaces;
 
@@ -28,6 +23,7 @@ namespace TaskerProject.Business.Services
 		}
 		public Tasks AddTask(Tasks task)
 		{
+			//needs logic for rules and catching exceptions
 			_context.AddTask(task);
 			return task;
 		}
@@ -38,9 +34,8 @@ namespace TaskerProject.Business.Services
 			if (existingTask != null)
 			{
 				_context.UpdateTask(id, task);
-				return existingTask;
 			}
-			return null;
+			return existingTask;
 		}
 		public void DeleteTask(int id)
 		{

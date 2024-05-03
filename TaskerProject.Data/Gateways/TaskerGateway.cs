@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TaskerProject.Data.Models;
+﻿using TaskerProject.Data.Models;
 using TaskerProject.Data.Data;
 using TaskerProject.Data.Gateways.Interfaces;
 
@@ -54,8 +49,6 @@ namespace TaskerProject.Data.Gateways
 				return newTask;
 			}
 			return null;
-			
-			
 		}
 	}
 }
