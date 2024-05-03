@@ -3,10 +3,10 @@ using TaskerProject.Business.Services;
 using TaskerProject.Business.Services.Interfaces;
 using TaskerProject.Data.Gateways;
 using TaskerProject.Data.Gateways.Interfaces;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using TaskerProject.Main.Configuration;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +41,11 @@ builder.Services.AddCors(options =>
 {
 	options.AddDefaultPolicy(builder => { builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
 });
+
+Log.Logger = new LoggerConfiguration()
+  .WriteTo.Console()
+  .WriteTo.File("logs/first_log.txt", rollingInterval: RollingInterval.Day)
+  .CreateLogger();
 
 var app = builder.Build();
 
